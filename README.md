@@ -4,13 +4,13 @@ Forward auth server to verify Cloudflare Access JWT tokens with traefik
 
 ## Description
 
-`traefik-auth-cloudflare` is designed to be a forward auth server for [traefik](traehttps://github.com/containous/traefik/fik) and [Cloudflare Access](https://www.cloudflare.com/products/cloudflare-access/).
+`traefik-auth-cloudflare` is designed to be a forward auth server for [traefik](https://github.com/containous/traefik) and [Cloudflare Access](https://www.cloudflare.com/products/cloudflare-access/).
 
-When forwarding a user's request to your application, Cloudflare Access will include a signed JWT as a HTTP header. This JWT needs to be authenticated to ensure the request has been signed by Cloudflare and has gone through their authentication.
+When forwarding a user's request to your application, Cloudflare Access will include a signed JWT as a HTTP header. This JWT needs to be authenticated to ensure the request has been signed by Cloudflare and has gone through their servers.
 
 Documentation on how to validate the JWT can be found here https://developers.cloudflare.com/access/setting-up-access/validate-jwt-tokens/.
 
-Using this service, you can configure your `traefik` instance to correctly authenticate cloudflare requests, and you can serve multiple authenticated applications from a single instance.
+Using `traefik-auth-cloudflare`, you can configure your `traefik` instance to correctly authenticate cloudflare requests, and you can serve multiple authenticated applications from a single instance.
 
 ## Example
 
@@ -20,7 +20,7 @@ Look into the [example](example/) directory to find example `docker-compose.yml`
 
 - Start an instance of `traefik-auth-cloudflare` in the same docker network as `traefik`. ideally this is a distinct network from your applications.
 
-```shell
+```bash
 # create network for traefik->traefik-auth-cloudflare communication
 
 $ docker network create auth
@@ -37,7 +37,7 @@ $ docker run --network auth traefik:1.7.3 ....
 
 - Configure your frontend to authenticate requests using `traefik-auth-cloudflare`
 
-```shell
+```bash
 # start your app with auth settings
 # the Application Audience (aud) tag needs to be set as an URL parameter: `/auth/{audience}`
 
@@ -48,7 +48,7 @@ $ docker run \
 
 - Optionally, configure traefik to forward the authenticated user header to your application
 
-```shell
+```bash
 # start your app with auth user forward
 # the http header is `X-Auth-User`
 
