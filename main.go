@@ -21,7 +21,7 @@ var (
 	// default flag values
 	authDomain = ""
 	address    = ""
-	port       = 3000
+	port       = 80
 
 	// jwt signing keys
 	keySet oidc.KeySet
