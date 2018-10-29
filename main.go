@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/coreos/go-oidc"
+	"github.com/gorilla/handlers"
 	"github.com/julienschmidt/httprouter"
 	flag "github.com/spf13/pflag"
 )
@@ -55,7 +56,9 @@ func main() {
 	router.GET("/auth/:audience", authHandler)
 
 	// listen
-	log.Fatalln(http.ListenAndServe(fmt.Sprintf("%s:%d", address, port), router))
+	addr := fmt.Sprintf("%s:%d", address, port)
+	log.Printf("Listening on %s", addr)
+	log.Fatalln(http.ListenAndServe(addr, handlers.LoggingHandler(os.Stdout, router)))
 
 }
 
