@@ -23,16 +23,16 @@ Look into the [example](example/) directory to find example `docker-compose.yml`
 ```bash
 # create network for traefik->traefik-auth-cloudflare communication
 
-$ docker network create auth
+$ docker network create traefik-auth
 
 # start traefik-auth-cloudflare
 # you need to set the auth domain you configured on cloudflare
 
-$ docker run -d --network auth --name traefik-auth-cloudflare akohlbecker/traefik-auth-cloudflare --auth-domain https://foo.cloudflareaccess.com
+$ docker run -d --network traefik-auth --name traefik-auth-cloudflare akohlbecker/traefik-auth-cloudflare --auth-domain https://foo.cloudflareaccess.com
 
-# start traefik in the `auth` docker network (left to the reader)
+# add traefik to your `traefik-auth` docker network (left to the reader)
 
-$ docker run --network auth traefik:1.7.3 ....
+$ docker network connect traefik-auth TRAEFIK_CONTAINER
 ```
 
 - Configure your frontend to authenticate requests using `traefik-auth-cloudflare`

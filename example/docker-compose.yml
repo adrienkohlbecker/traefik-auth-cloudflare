@@ -9,7 +9,7 @@ services:
       - 443:443
     networks:
       - web
-      - auth
+      - traefik-auth
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik.toml:/traefik.toml
@@ -19,7 +19,7 @@ services:
     image: akohlbecker/traefik-auth-cloudflare
     restart: always
     networks:
-      - auth
+      - traefik-auth
     container_name: traefik-auth-cloudflare
     # traefik-auth-cloudflare needs to be configured with your auth-domain
     command: ["--auth-domain", "https://foo.cloudflareaccess.com"]
