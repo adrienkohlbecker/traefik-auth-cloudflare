@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+        "strconv"
 
 	"github.com/coreos/go-oidc"
 	"github.com/gorilla/handlers"
@@ -18,11 +19,18 @@ type Claims struct {
 	Email string `json:"email"`
 }
 
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
+}
+
 var (
 	// default flag values
-	authDomain = ""
-	address    = ""
-	port       = 80
+	authDomain = getEnv("AUTH_DOMAIN", "")
+	address    = getEnv("LISTEN_ADDRESS", "")
+	port, err  = strconv.Atoi(getEnv("LISTEN_PORT", "80"))
 
 	// jwt signing keys
 	keySet oidc.KeySet
@@ -32,9 +40,15 @@ func init() {
 
 	// parse flags
 	flag.StringVar(&authDomain, "auth-domain", authDomain, "authentication domain (https://foo.cloudflareaccess.com)")
-	flag.IntVar(&port, "port", port, "http port to listen on")
+	flag.IntVar(&port, "port", port, "http port to listen on (default 80)")
 	flag.StringVar(&address, "address", address, "http address to listen on (leave empty to listen on all interfaces)")
 	flag.Parse()
+
+        if port <= 0 {
+                fmt.Printf("ERROR: Invalid port number %s \n", port)
+                flag.Usage()
+                os.Exit(1)
+        }
 
 	// --auth-domain is required
 	if authDomain == "" {

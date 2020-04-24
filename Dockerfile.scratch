@@ -1,0 +1,22 @@
+FROM golang:1.14-alpine as builder
+RUN apk add build-base
+WORKDIR /go/src/github.com/adrienkohlbecker/traefik-auth-cloudflare
+COPY . .
+# Static build required so that we can safely copy the binary over.
+RUN go install -ldflags "-linkmode external -extldflags -static" github.com/adrienkohlbecker/traefik-auth-cloudflare
+
+FROM alpine as alpine
+RUN apk --no-cache add tzdata zip ca-certificates
+WORKDIR /usr/share/zoneinfo
+RUN zip -r -0 /zoneinfo.zip .
+RUN adduser --uid 757 -D golang
+
+FROM scratch
+ENV ZONEINFO /zoneinfo.zip
+COPY --from=alpine /zoneinfo.zip /
+COPY --from=alpine /etc/ssl/certs /etc/ssl/certs
+COPY --from=alpine /etc/passwd /etc/passwd
+COPY --from=builder /go/bin/traefik-auth-cloudflare /traefik-auth-cloudflare
+ENV LISTEN_PORT=8080
+USER 757
+ENTRYPOINT ["/traefik-auth-cloudflare"]
