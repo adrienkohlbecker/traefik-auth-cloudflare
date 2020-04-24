@@ -1,4 +1,4 @@
-FROM golang:1.11
+FROM golang:1.14
 
 WORKDIR /go/src/github.com/adrienkohlbecker/traefik-auth-cloudflare
 COPY . .
