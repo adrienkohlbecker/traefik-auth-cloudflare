@@ -1,4 +1,4 @@
-version: '2'
+version: '3.7'
 
 services:
   traefik:
@@ -42,26 +42,7 @@ services:
       # Optional: Forward the X-Auth-User header to the backend, which is set by traefik-auth-cloudflare to contain the user email
       - "traefik.frontend.auth.forward.authResponseHeaders=X-Auth-User"
 
-  # Configure a second app on the same auth domain, but with a different audience tag so can be a different app on cloudflare
-  echo-2:
-    image: solsson/http-echo
-    restart: always
-    networks:
-      - web
-    labels:
-      # basic traefik config
-      - "traefik.docker.network=web"
-      - "traefik.enable=true"
-      - "traefik.basic.frontend.rule=Host:echo-2.my-awesome-app.org"
-      - "traefik.basic.port=80"
-      - "traefik.basic.protocol=http"
-      # Each request is first forwared to traefik-auth-cloudflare to check the JWT token
-      # the Application Audience (aud) tag is given as an URL parameter: `/auth/{audience}`
-      - "traefik.frontend.auth.forward.address=http://traefik-auth-cloudflare/auth/107d1e2e4f806d544c71648096c25603b03b2f30323b0a6892205dd130cdde27"
-      # Optional: Forward the X-Auth-User header to the backend, which is set by traefik-auth-cloudflare to contain the user email
-      - "traefik.frontend.auth.forward.authResponseHeaders=X-Auth-User"
-
 networks:
-  auth:
+  traefik-auth:
   web:
-    external: true
+    name: web
