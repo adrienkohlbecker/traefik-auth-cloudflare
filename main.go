@@ -97,12 +97,6 @@ func authHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 
-	// email is required in claims
-	if claims.Email == "" {
-		write(w, http.StatusUnauthorized, "No email in JWT claims")
-		return
-	}
-
 	// Request is good to go
 	w.Header().Set("X-Auth-User", claims.Email)
 	write(w, http.StatusOK, "OK!")
