@@ -1,16 +1,10 @@
-debug = false
-
-logLevel = "INFO"
-defaultEntryPoints = ["http"]
+[log]
+level = "INFO"
 
 [entryPoints]
   [entryPoints.http]
   address = ":80"
 
-[retry]
-
-[docker]
-endpoint = "unix:///var/run/docker.sock"
-domain = "my-awesome-app.org"
-watch = true
-exposedByDefault = false
+[providers]
+  [providers.docker]
+  exposedByDefault = false
