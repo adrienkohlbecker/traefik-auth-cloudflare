@@ -22,7 +22,7 @@ var (
 	// default flag values
 	authDomain = ""
 	address    = ""
-	port       = 80
+	port       = 8080
 
 	// jwt signing keys
 	keySet oidc.KeySet
@@ -32,7 +32,7 @@ func init() {
 
 	// parse flags
 	flag.StringVar(&authDomain, "auth-domain", authDomain, "authentication domain (https://foo.cloudflareaccess.com)")
-	flag.IntVar(&port, "port", port, "http port to listen on")
+	flag.IntVar(&port, "port", port, "http port to listen on (default 8080)")
 	flag.StringVar(&address, "address", address, "http address to listen on (leave empty to listen on all interfaces)")
 	flag.Parse()
 

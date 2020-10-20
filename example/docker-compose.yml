@@ -18,6 +18,8 @@ services:
   traefik-auth-cloudflare:
     image: akohlbecker/traefik-auth-cloudflare
     restart: always
+    expose:
+      - 8080
     networks:
       - traefik-auth
     container_name: traefik-auth-cloudflare
@@ -38,7 +40,7 @@ services:
       - "traefik.basic.protocol=http"
       # Each request is first forwared to traefik-auth-cloudflare to check the JWT token
       # the Application Audience (aud) tag is given as an URL parameter: `/auth/{audience}`
-      - "traefik.frontend.auth.forward.address=http://traefik-auth-cloudflare/auth/62d4c34bece5735ba2b94a865de5cc6312dc4f6192a946005e2ac59a3f4522d2"
+      - "traefik.frontend.auth.forward.address=http://traefik-auth-cloudflare:8080/auth/62d4c34bece5735ba2b94a865de5cc6312dc4f6192a946005e2ac59a3f4522d2"
       # Optional: Forward the X-Auth-User header to the backend, which is set by traefik-auth-cloudflare to contain the user email
       - "traefik.frontend.auth.forward.authResponseHeaders=X-Auth-User"
 

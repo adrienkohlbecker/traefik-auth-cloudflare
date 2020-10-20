@@ -25,7 +25,7 @@ Look into the [example](example/) directory to find example `docker-compose.yml`
 
 $ docker network create traefik-auth
 
-# start traefik-auth-cloudflare
+# start traefik-auth-cloudflare (default port is 8080)
 # you need to set the auth domain you configured on cloudflare
 
 $ docker run -d --network traefik-auth --name traefik-auth-cloudflare akohlbecker/traefik-auth-cloudflare --auth-domain https://foo.cloudflareaccess.com
@@ -42,7 +42,7 @@ $ docker network connect traefik-auth TRAEFIK_CONTAINER
 # the Application Audience (aud) tag needs to be set as an URL parameter: `/auth/{audience}`
 
 $ docker run \
-  --label "traefik.frontend.auth.forward.address=http://traefik-auth-cloudflare/auth/a83fd537ee93f21e86e51ab3c88f84ef07fd388865c7d0c3236947a8cf79daf5" \
+  --label "traefik.frontend.auth.forward.address=http://traefik-auth-cloudflare:8080/auth/a83fd537ee93f21e86e51ab3c88f84ef07fd388865c7d0c3236947a8cf79daf5" \
   ....
 ```
 
