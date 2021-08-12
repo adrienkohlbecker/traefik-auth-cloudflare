@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/coreos/go-oidc"
 	"github.com/gorilla/handlers"
@@ -16,6 +17,13 @@ import (
 // Claims stores the values we want to extract from the JWT as JSON
 type Claims struct {
 	Email string `json:"email"`
+}
+
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
 }
 
 var (
@@ -30,15 +38,25 @@ var (
 
 func init() {
 
+	authDomain := getEnv("AUTH_DOMAIN", authDomain)
+	address := getEnv("LISTEN_ADDRESS", address)
+	port, _ := strconv.Atoi(getEnv("LISTEN_PORT", fmt.Sprintf("%d", port)))
+
 	// parse flags
 	flag.StringVar(&authDomain, "auth-domain", authDomain, "authentication domain (https://foo.cloudflareaccess.com)")
-	flag.IntVar(&port, "port", port, "http port to listen on (default 8080)")
+	flag.IntVar(&port, "port", port, fmt.Sprintf("http port to listen on (default %d)", port))
 	flag.StringVar(&address, "address", address, "http address to listen on (leave empty to listen on all interfaces)")
 	flag.Parse()
 
 	// --auth-domain is required
 	if authDomain == "" {
 		fmt.Println("ERROR: Please set --auth-domain to the authorization domain you configured on cloudflare. Should be like `https://foo.cloudflareaccess.com`")
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	if port <= 0 {
+		fmt.Printf("ERROR: Invalid port number %d \n", port)
 		flag.Usage()
 		os.Exit(1)
 	}
