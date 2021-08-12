@@ -116,6 +116,7 @@ func authHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	}
 
 	// Request is good to go
+	// Note: In case an access token is used, then the email will be empty, see https://github.com/adrienkohlbecker/traefik-auth-cloudflare/pull/6
 	w.Header().Set("X-Auth-User", claims.Email)
 	write(w, http.StatusOK, "OK!")
 
