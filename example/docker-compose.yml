@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   traefik:
-    image: traefik:1.7.3
+    image: traefik:2.4.13
     restart: always
     ports:
       - 80:80
@@ -11,8 +11,8 @@ services:
       - web
       - traefik-auth
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./traefik.toml:/traefik.toml
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.toml:/etc/traefik/traefik.toml:ro
     container_name: traefik
 
   traefik-auth-cloudflare:
@@ -29,20 +29,22 @@ services:
   echo:
     image: solsson/http-echo
     restart: always
+    init: true
+    expose:
+      - 80
     networks:
       - web
     labels:
       # basic traefik config
       - "traefik.docker.network=web"
       - "traefik.enable=true"
-      - "traefik.basic.frontend.rule=Host:echo.my-awesome-app.org"
-      - "traefik.basic.port=80"
-      - "traefik.basic.protocol=http"
-      # Each request is first forwared to traefik-auth-cloudflare to check the JWT token
+      - "traefik.http.routers.echo.rule=Host(`echo.my-awesome-app.org`)"
+      # Each request is first forwarded to traefik-auth-cloudflare to check the JWT token
       # the Application Audience (aud) tag is given as an URL parameter: `/auth/{audience}`
-      - "traefik.frontend.auth.forward.address=http://traefik-auth-cloudflare:8080/auth/62d4c34bece5735ba2b94a865de5cc6312dc4f6192a946005e2ac59a3f4522d2"
+      - "traefik.http.routers.echo.middlewares=echo-auth@docker"
+      - "traefik.http.middlewares.echo-auth.forwardauth.address=http://traefik-auth-cloudflare:8080/auth/62d4c34bece5735ba2b94a865de5cc6312dc4f6192a946005e2ac59a3f4522d2"
       # Optional: Forward the X-Auth-User header to the backend, which is set by traefik-auth-cloudflare to contain the user email
-      - "traefik.frontend.auth.forward.authResponseHeaders=X-Auth-User"
+      - "traefik.http.middlewares.echo-auth.forwardauth.authResponseHeaders=X-Auth-User"
 
 networks:
   traefik-auth:
