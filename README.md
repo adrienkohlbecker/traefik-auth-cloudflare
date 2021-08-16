@@ -35,14 +35,15 @@ $ docker run -d --network traefik-auth --name traefik-auth-cloudflare akohlbecke
 $ docker network connect traefik-auth TRAEFIK_CONTAINER
 ```
 
-- Configure your frontend to authenticate requests using `traefik-auth-cloudflare`
+- Configure your router to authenticate requests using `traefik-auth-cloudflare`
 
 ```bash
 # start your app with auth settings
 # the Application Audience (aud) tag needs to be set as an URL parameter: `/auth/{audience}`
 
 $ docker run \
-  --label "traefik.frontend.auth.forward.address=http://traefik-auth-cloudflare:8080/auth/a83fd537ee93f21e86e51ab3c88f84ef07fd388865c7d0c3236947a8cf79daf5" \
+  --label "traefik.http.routers.myapp.middlewares=myapp-auth@docker" \
+  --label "traefik.http.middlewares.myapp-auth.forwardauth.address=http://traefik-auth-cloudflare:8080/auth/a83fd537ee93f21e86e51ab3c88f84ef07fd388865c7d0c3236947a8cf79daf5" \
   ....
 ```
 
@@ -53,6 +54,6 @@ $ docker run \
 # the http header is `X-Auth-User`
 
 $ docker run \
-  --label "traefik.frontend.auth.forward.authResponseHeaders=X-Auth-User" \
+  --label "traefik.http.middlewares.myapp-auth.forwardauth.authResponseHeaders=X-Auth-User" \
   ....
 ```
