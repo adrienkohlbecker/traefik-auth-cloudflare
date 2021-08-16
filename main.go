@@ -16,7 +16,8 @@ import (
 
 // Claims stores the values we want to extract from the JWT as JSON
 type Claims struct {
-	Email string `json:"email"`
+	Email      string `json:"email"`
+	CommonName string `json:"common_name"`
 }
 
 func getEnv(key, fallback string) string {
@@ -117,9 +118,15 @@ func authHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 
+	var user string
+	if claims.Email != "" { // user is authenticated person
+		user = claims.Email
+	} else if claims.CommonName != "" { // user is service token
+		user = claims.CommonName
+	}
+
 	// Request is good to go
-	// Note: In case an access token is used, then the email will be empty, see https://github.com/adrienkohlbecker/traefik-auth-cloudflare/pull/6
-	w.Header().Set("X-Auth-User", claims.Email)
+	w.Header().Set("X-Auth-User", user)
 	write(w, http.StatusOK, "OK!")
 
 }
