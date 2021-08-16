@@ -38,9 +38,9 @@ var (
 
 func init() {
 
-	authDomain := getEnv("AUTH_DOMAIN", authDomain)
-	address := getEnv("LISTEN_ADDRESS", address)
-	port, _ := strconv.Atoi(getEnv("LISTEN_PORT", fmt.Sprintf("%d", port)))
+	authDomain = getEnv("AUTH_DOMAIN", authDomain)
+	address = getEnv("LISTEN_ADDRESS", address)
+	port, _ = strconv.Atoi(getEnv("LISTEN_PORT", fmt.Sprintf("%d", port)))
 
 	// parse flags
 	flag.StringVar(&authDomain, "auth-domain", authDomain, "authentication domain (https://foo.cloudflareaccess.com)")
@@ -69,6 +69,8 @@ func init() {
 
 func main() {
 
+	log.Printf("Authentication domain: %s\n", authDomain)
+
 	// set up routes
 	router := httprouter.New()
 	router.GET("/auth/:audience", authHandler)
@@ -92,7 +94,7 @@ func authHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	verifier := oidc.NewVerifier(authDomain, keySet, config)
 
 	// Make sure that the incoming request has our token header
-	//  Could also look in the cookies for CF_AUTHORIZATION
+	// Could also look in the cookies for CF_AUTHORIZATION
 	accessJWT := r.Header.Get("Cf-Access-Jwt-Assertion")
 	if accessJWT == "" {
 		write(w, http.StatusUnauthorized, "No token on the request")
